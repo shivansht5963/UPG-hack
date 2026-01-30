@@ -1,0 +1,533 @@
+/* =============================================
+   CircuTrade AI - Custom Styles
+   Circular Economy Marketplace Design System
+   ============================================= */
+
+/* ==================== 
+   Color Palette 
+   ==================== */
+:root {
+    /* Primary Brand Colors - Green for Sustainability */
+    --primary-green: #10b981;
+    --primary-dark: #059669;
+    --primary-light: #34d399;
+    
+    /* Secondary Colors */
+    --secondary-blue: #3b82f6;
+    --secondary-purple: #8b5cf6;
+    
+    /* Status Colors */
+    --success-green: #22c55e;
+    --warning-orange: #f59e0b;
+    --danger-red: #ef4444;
+    --info-blue: #06b6d4;
+    
+    /* Neutral Colors */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* Semantic Colors */
+    --verified-badge: #10b981;
+    --karma-gold: #fbbf24;
+    --blockchain-purple: #8b5cf6;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== 
+   Global Styles 
+   ==================== */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+}
+
+/* Minimalist for Tier 3 optimization */
+* {
+    box-sizing: border-box;
+}
+
+/* ==================== 
+   Navigation 
+   ==================== */
+.navbar.bg-primary-custom {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+    color: var(--gray-100) !important;
+}
+
+/* ==================== 
+   Cards & Containers 
+   ==================== */
+.card-custom {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.card-custom:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+/* Marketplace Cards */
+.marketplace-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: white;
+    border: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+}
+
+.marketplace-card:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-6px);
+    border-color: var(--primary-green);
+}
+
+.marketplace-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.marketplace-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* ==================== 
+   Badges & Tags 
+   ==================== */
+.badge-grade-a {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+}
+
+.badge-grade-b {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+}
+
+.badge-grade-c {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+}
+
+.badge-verified {
+    background-color: var(--verified-badge);
+    color: white;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.karma-badge {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==================== 
+   Buttons 
+   ==================== */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary-custom:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--primary-green);
+    color: var(--primary-green);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-custom:hover {
+    background-color: var(--primary-green);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ==================== 
+   Provenance Timeline 
+   ==================== */
+.timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--blockchain-purple) 0%, var(--primary-green) 100%);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 100px;
+    margin-bottom: 2rem;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: 38px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--blockchain-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    z-index: 2;
+}
+
+.timeline-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid var(--blockchain-purple);
+}
+
+.timeline-hash {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--gray-700);
+    background-color: var(--gray-100);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+    margin-top: 0.5rem;
+}
+
+/* ==================== 
+   Impact Counter 
+   ==================== */
+.impact-counter {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2rem;
+    color: white;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+}
+
+.impact-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 1rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.impact-label {
+    font-size: 1.25rem;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+/* ==================== 
+   Hero Section 
+   ==================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 50%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    opacity: 0.95;
+    margin-bottom: 2rem;
+}
+
+/* ==================== 
+   Dashboard Widgets 
+   ==================== */
+.dashboard-widget {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid var(--primary-green);
+    margin-bottom: var(--spacing-lg);
+    transition: all 0.3s ease;
+}
+
+.dashboard-widget:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateX(4px);
+}
+
+.widget-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.widget-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin: 0.5rem 0;
+}
+
+.widget-label {
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==================== 
+   Forms 
+   ==================== */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+/* ==================== 
+   Progress Bars 
+   ==================== */
+.progress-bar-custom {
+    background: linear-gradient(90deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==================== 
+   Animations 
+   ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.count-up {
+    animation: countUp 0.8s ease-out;
+}
+
+/* ==================== 
+   Utility Classes 
+   ==================== */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
+}
+
+.text-primary-custom {
+    color: var(--primary-green);
+}
+
+.border-primary-custom {
+    border-color: var(--primary-green) !important;
+}
+
+/* ==================== 
+   Responsive Design 
+   ==================== */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .impact-number {
+        font-size: 2.5rem;
+    }
+    
+    .timeline::before {
+        left: 25px;
+    }
+    
+    .timeline-item {
+        padding-left: 60px;
+    }
+    
+    .timeline-icon {
+        left: 13px;
+    }
+}
+
+/* ==================== 
+   Loading States 
+   ==================== */
+.skeleton {
+    background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ==================== 
+   Print Styles (for certificates)
+   ==================== */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .timeline-content {
+        page-break-inside: avoid;
+    }
+}

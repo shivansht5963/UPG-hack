@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card card-custom shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" class="rounded-circle mb-3"
+                            alt="{{ user.get_full_name }}" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-circle bg-primary-custom text-white d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 120px; height: 120px; font-size: 3rem;">
+                            {{ user.first_name.0 }}{{ user.last_name.0 }}
+                        </div>
+                        {% endif %}
+                        <h2 class="fw-bold">{{ user.get_full_name }}</h2>
+                        <p class="text-muted">{{ user.get_role_display }}</p>
+                        {% if user.role == 'GENERATOR' %}
+                        <div class="karma-badge">
+                            <i class="bi bi-star-fill"></i> {{ user.karma_score }} Karma Points
+                        </div>
+                        <p class="small text-muted mt-1">{{ user.karma_level }} Seller</p>
+                        {% endif %}
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-person"></i> Personal Information
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">
+                                        First Name
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">
+                                        Last Name
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
+                                        Email
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-bold">
+                                        Phone Number
+                                    </label>
+                                    {{ form.phone_number }}
+                                    {% if form.phone_number.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.phone_number.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Company Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-building"></i> Company Information
+                            </h5>
+
+                            <div class="mb-3">
+                                <label for="{{ form.company_name.id_for_label }}" class="form-label fw-bold">
+                                    Company Name
+                                </label>
+                                {{ form.company_name }}
+                                {% if form.company_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.company_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.bio.id_for_label }}" class="form-label fw-bold">
+                                    Bio
+                                </label>
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                <div class="invalid-feedback d-block">{{ form.bio.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-geo-alt"></i> Location
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label fw-bold">
+                                        City
+                                    </label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.city.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label fw-bold">
+                                        State
+                                    </label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.state.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.pincode.id_for_label }}" class="form-label fw-bold">
+                                    Pincode
+                                </label>
+                                {{ form.pincode }}
+                                {% if form.pincode.errors %}
+                                <div class="invalid-feedback d-block">{{ form.pincode.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Profile Image -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-image"></i> Profile Image
+                            </h5>
+
+                            <div class="mb-3">
+                                <label for="{{ form.profile_image.id_for_label }}" class="form-label fw-bold">
+                                    Upload New Image
+                                </label>
+                                {{ form.profile_image }}
+                                {% if form.profile_image.errors %}
+                                <div class="invalid-feedback d-block">{{ form.profile_image.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary-custom btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Update Profile
+                            </button>
+                            <a href="{% url 'marketplace_feed' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Stats -->
+            <div class="row mt-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card card-custom text-center">
+                        <div class="card-body">
+                            <i class="bi bi-box-seam text-primary-custom" style="font-size: 2rem;"></i>
+                            <div class="widget-value mt-2">{{ user.total_listings }}</div>
+                            <div class="small text-muted">Total Listings</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card card-custom text-center">
+                        <div class="card-body">
+                            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                            <div class="widget-value mt-2">{{ user.total_sales }}</div>
+                            <div class="small text-muted">Completed Sales</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card card-custom text-center">
+                        <div class="card-body">
+                            <i class="bi bi-shield-check text-info" style="font-size: 2rem;"></i>
+                            <div class="widget-value mt-2">{% if user.is_verified %}Yes{% else %}No{% endif %}</div>
+                            <div class="small text-muted">Verified</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

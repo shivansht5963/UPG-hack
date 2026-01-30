@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Generator Dashboard - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-2">Welcome back, {{ user.get_full_name }}!</h2>
+            <p class="text-muted">{{ user.get_role_display }} Dashboard</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'seller_offers' %}" class="btn btn-info me-2">
+                <i class="bi bi-inbox me-2"></i>View Offers
+            </a>
+            <a href="{% url 'create_listing' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle me-2"></i>Create New Listing
+            </a>
+        </div>
+    </div>
+
+    <!-- Karma Card -->
+    <div class="card card-custom mb-4"
+        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;">
+        <div class="card-body text-white p-4">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <i class="bi bi-star-fill" style="font-size: 4rem;"></i>
+                    <h3 class="mt-2 mb-0">{{ karma_info.current_karma }} Karma</h3>
+                    <p class="mb-0 opacity-75">{{ karma_info.current_level }} Seller</p>
+                </div>
+                <div class="col-md-8">
+                    <h5 class="mb-3">Karma Progress</h5>
+                    <div class="progress bg-white bg-opacity-25" style="height: 25px;">
+                        <div class="progress-bar bg-white" role="progressbar"
+                            style="width: {{ karma_info.karma_progress }}%;"
+                            aria-valuenow="{{ karma_info.karma_progress }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ karma_info.karma_progress|floatformat:0 }}%
+                        </div>
+                    </div>
+                    {% if karma_info.next_level %}
+                    <p class="mt-2 mb-0 small">
+                        <i class="bi bi-arrow-up"></i> {{ karma_info.karma_to_next }} points to {{ karma_info.next_level
+                        }}
+                    </p>
+                    {% else %}
+                    <p class="mt-2 mb-0 small">
+                        <i class="bi bi-trophy-fill"></i> Maximum level achieved!
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam text-primary-custom" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.total_listings }}</div>
+                    <div class="small text-muted">Total Listings</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.active_listings }}</div>
+                    <div class="small text-muted">Active Listings</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check text-info" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.verified_listings }}</div>
+                    <div class="small text-muted">Verified</div>
+                    <div class="small text-success">{{ stats.average_trust_score|floatformat:0 }}% avg trust</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-globe2 text-warning" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.total_co2_impact|floatformat:1 }}</div>
+                    <div class="small text-muted">Kg CO₂ Saved</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Listings -->
+    <div class="card card-custom">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Listings</h5>
+                <a href="{% url 'marketplace_feed' %}" class="btn btn-sm btn-outline-custom">
+                    View All
+                </a>
+            </div>
+
+            {% if recent_listings %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Material</th>
+                            <th>Weight</th>
+                            <th>Grade</th>
+                            <th>Trust Score</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listing in recent_listings %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'listing_detail' listing.id %}" class="text-decoration-none">
+                                    {{ listing.title|truncatewords:5 }}
+                                </a>
+                            </td>
+                            <td>
+                                <i class="bi bi-recycle text-primary-custom"></i>
+                                {{ listing.material.name }}
+                            </td>
+                            <td>{{ listing.weight }} kg</td>
+                            <td>
+                                <span class="badge-grade-{{ listing.grade|lower }}">
+                                    {{ listing.grade }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress" style="height: 8px; width: 80px;">
+                                    <div class="progress-bar-custom" style="width: {{ listing.trust_score }}%;">
+                                    </div>
+                                </div>
+                                <small>{{ listing.trust_score }}%</small>
+                            </td>
+                            <td>
+                                {% if listing.status == 'LISTED' %}
+                                <span class="badge bg-success">Listed</span>
+                                {% elif listing.status == 'SOLD' %}
+                                <span class="badge bg-primary">Sold</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ listing.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold text-success">₹{{ listing.calculated_price|floatformat:0 }}</td>
+                            <td>
+                                <a href="{% url 'listing_detail' listing.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #d1d5db;"></i>
+                <h5 class="mt-3 text-muted">No listings yet</h5>
+                <p class="text-muted">Create your first waste listing to get started!</p>
+                <a href="{% url 'create_listing' %}" class="btn btn-success mt-3">
+                    <i class="bi bi-plus-circle me-2"></i>Create First Listing
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-lightbulb me-2"></i>Tips to Earn More Karma</h6>
+                    <ul class="mb-0 small">
+                        <li>Upload clear photos for better verification</li>
+                        <li>Provide detailed descriptions</li>
+                        <li>Keep listings active and updated</li>
+                        <li>Respond quickly to buyer inquiries</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-graph-up me-2"></i>Environmental Impact</h6>
+                    <p class="mb-2 small">
+                        <strong>Total Weight Listed:</strong> {{ stats.total_weight_listed|floatformat:0 }} kg
+                    </p>
+                    <p class="mb-0 small text-success">
+                        <i class="bi bi-globe2 me-1"></i>
+                        If all your materials are recycled, you'll save <strong>{{ stats.total_co2_impact|floatformat:1
+                            }} kg CO₂</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Received Offers - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">
+        <i class="bi bi-inbox me-2"></i>Received Purchase Offers
+    </h2>
+
+    {% if offers %}
+    <div class="row">
+        {% for offer in offers %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="mb-0">{{ offer.listing.title|truncatewords:8 }}</h5>
+                        <span
+                            class="badge bg-{% if offer.status == 'PENDING' %}warning{% elif offer.status == 'ACCEPTED' %}success{% elif offer.status == 'CONFIRMED' %}primary{% elif offer.status == 'REJECTED' %}danger{% else %}secondary{% endif %}">
+                            {{ offer.get_status_display }}
+                        </span>
+                    </div>
+
+                    <p class="mb-2">
+                        <strong>Buyer:</strong> {{ offer.buyer.get_full_name }}<br>
+                        <strong>Offer Amount:</strong> <span class="text-success">₹{{ offer.offer_amount }}</span><br>
+                        <strong>Listed Price:</strong> ₹{{ offer.listing.calculated_price|floatformat:0 }}<br>
+                        <strong>Contact:</strong> {{ offer.contact_number }}<br>
+                        <strong>Received:</strong> {{ offer.created_at|date:"M d, Y H:i" }}
+                    </p>
+
+                    {% if offer.delivery_address %}
+                    <p class="small mb-2">
+                        <strong>Delivery Address:</strong><br>
+                        {{ offer.delivery_address }}
+                    </p>
+                    {% endif %}
+
+                    {% if offer.notes %}
+                    <p class="small mb-2">
+                        <strong>Buyer Notes:</strong><br>
+                        <em>{{ offer.notes }}</em>
+                    </p>
+                    {% endif %}
+
+                    {% if offer.status == 'PENDING' %}
+                    <div class="btn-group w-100 mt-2" role="group">
+                        <form method="POST" action="{% url 'accept_offer' offer.id %}" class="w-50">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100"
+                                onclick="return confirm('Accept this offer of ₹{{ offer.offer_amount }}?')">
+                                <i class="bi bi-check-circle me-1"></i>Accept
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-danger w-50" data-bs-toggle="modal"
+                            data-bs-target="#rejectModal{{ offer.id }}">
+                            <i class="bi bi-x-circle me-1"></i>Reject
+                        </button>
+                    </div>
+
+                    <!-- Reject Modal -->
+                    <div class="modal fade" id="rejectModal{{ offer.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">Reject Offer</h5>
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{% url 'reject_offer' offer.id %}"
+                                        id="rejectForm{{ offer.id }}">
+                                        {% csrf_token %}
+                                        <label class="form-label">Reason for rejection (optional):</label>
+                                        <textarea class="form-control" name="seller_notes" rows="3"
+                                            placeholder="Let the buyer know why..."></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" form="rejectForm{{ offer.id }}" class="btn btn-danger">
+                                        <i class="bi bi-x-circle me-1"></i>Reject Offer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% elif offer.status == 'ACCEPTED' %}
+                    <div class="alert alert-success small mb-0">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Offer accepted! Waiting for buyer payment confirmation.
+                    </div>
+                    {% elif offer.status == 'CONFIRMED' %}
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-cash-coin me-1"></i>
+                        Payment confirmed! ₹{{ offer.offer_amount }} - Hash:
+                        <code>{{ offer.transaction_hash|slice:":16" }}...</code>
+                    </div>
+                    {% elif offer.status == 'REJECTED' %}
+                    <div class="alert alert-secondary small mb-0">
+                        Offer rejected.
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'listing_detail' offer.listing.id %}" class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="bi bi-eye me-1"></i>View Listing
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No offers received yet. Keep your listings active!
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

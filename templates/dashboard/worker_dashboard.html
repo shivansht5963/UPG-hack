@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Worker Dashboard - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-2">Namaste, {{ user.get_full_name }}!</h2>
+            <p class="text-muted">{{ user.get_role_display }} Dashboard</p>
+        </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Work Opportunities!</strong> Find waste collection and sorting jobs near you.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-briefcase text-primary-custom" style="font-size: 3rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.nearby_opportunities }}</div>
+                    <div class="small text-muted">Nearby Opportunities</div>
+                    <div class="small text-info">{{ user.city }}, {{ user.state }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-weight text-success" style="font-size: 3rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.total_weight_available|floatformat:0 }}</div>
+                    <div class="small text-muted">Kg Available Nearby</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nearby Work Opportunities -->
+    <div class="card card-custom">
+        <div class="card-body">
+            <h5 class="mb-4"><i class="bi bi-geo-alt me-2"></i>Work Opportunities Near You</h5>
+
+            {% if nearby_listings %}
+            <div class="list-group list-group-flush">
+                {% for listing in nearby_listings %}
+                <div class="list-group-item px-0">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            {% if listing.image1 %}
+                            <img src="{{ listing.image1.url }}" class="img-fluid rounded" alt="{{ listing.title }}"
+                                style="height: 80px; width: 100%; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center"
+                                style="height: 80px;">
+                                <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <h6 class="mb-1">{{ listing.title }}</h6>
+                            <p class="text-muted mb-2 small">
+                                <i class="bi bi-recycle"></i> {{ listing.material.name }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-weight"></i> {{ listing.weight }} kg
+                            </p>
+                            <p class="mb-0 small">
+                                <i class="bi bi-geo-alt text-primary-custom"></i>
+                                {{ listing.city }}, {{ listing.state }}
+                                {% if listing.pincode %}
+                                - {{ listing.pincode }}
+                                {% endif %}
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                <i class="bi bi-person"></i> Seller: {{ listing.seller.get_full_name }}
+                                {% if listing.seller.phone_number %}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-telephone"></i> {{ listing.seller.phone_number }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="mb-2">
+                                <span class="badge-grade-{{ listing.grade|lower }}">
+                                    Grade {{ listing.grade }}
+                                </span>
+                            </div>
+                            <div class="fw-bold text-success mb-2">
+                                ₹{{ listing.calculated_price|floatformat:0 }}
+                            </div>
+                            <a href="{% url 'listing_detail' listing.id %}" class="btn btn-sm btn-primary-custom">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-briefcase" style="font-size: 4rem; color: #d1d5db;"></i>
+                <h5 class="mt-3 text-muted">No opportunities nearby yet</h5>
+                <p class="text-muted">Check back later or update your location</p>
+                <a href="{% url 'profile' %}" class="btn btn-outline-custom mt-3">
+                    <i class="bi bi-person me-2"></i>Update Profile
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Information Cards -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100 bg-light">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-info-circle me-2"></i>How It Works</h6>
+                    <ol class="mb-0 small">
+                        <li>Browse nearby waste collection jobs</li>
+                        <li>Contact sellers directly via phone</li>
+                        <li>Collect and sort materials</li>
+                        <li>Earn income from waste collection</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100 bg-light">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-lightbulb me-2"></i>Worker Tips</h6>
+                    <ul class="mb-0 small">
+                        <li>Focus on listings near your location</li>
+                        <li>Check material weight before committing</li>
+                        <li>Maintain good relationships with sellers</li>
+                        <li>Update your profile with accurate location</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Message -->
+    <div class="card card-custom mt-4 bg-success text-white">
+        <div class="card-body text-center">
+            <h5 class="mb-2"><i class="bi bi-globe2 me-2"></i>Your Work Makes a Difference!</h5>
+            <p class="mb-0">Every kg of waste you collect helps save the environment and creates a circular economy.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

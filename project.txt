@@ -1,0 +1,104 @@
+Project Requirement Document: CircuTrade AI
+Subtitle: A Decentralized Circular Economy Marketplace for Verified Industrial Waste
+
+1. Project Overview
+CircuTrade AI is a B2B platform that digitizes the fragmented waste ecosystem. It uses Computer Vision (OpenCV) for pre-verification, a Django-based Marketplace for matching, and a Blockchain-inspired Ledger for tracking the lifecycle of waste from "bin to board-room."
+
+2. User Roles & Dashboards
+A. The Waste Generator (Small Factories / Aggregators)
+Goal: List waste and get a fair, instant price.
+
+Dashboard Features:
+
+Verification Hub: UI for "Insta-Grade" image/video scans.
+
+Karma Stats: Current reputation score (influences visibility).
+
+Listing Manager: Active sales, weight sold, and total earnings.
+
+B. The Buyer (Manufacturers / Recyclers)
+Goal: Source high-quality, verified raw materials with proof of sustainability.
+
+Dashboard Features:
+
+Resource Feed: Filterable marketplace (Grade A PET, Grade B Cotton, etc.).
+
+Provenance Vault: Timeline views of purchased material history.
+
+ESG Report: Auto-generated stats on CO2 saved through purchases.
+
+C. The Informal Worker (Nokia 1100 / Tier-3 Users)
+Goal: Get paid digitally and build a professional identity.
+
+Feature: Simplified SMS/WhatsApp Interface (Simulated) for status updates and payment receipts.
+
+3. Functional Requirements (The "What")
+Feature	Requirement Description	Logic / Integration
+Multi-Modal Verification	App must accept OpenCV data (Material Type, Grade, Trust Score).	Reject listings with Trust < 50%.
+Blockchain Provenance	Every status change must create a cryptographically linked log entry.	Use SHA-256 hashing in a post_save signal.
+Smart Matching	Match buyers to sellers based on location and material specs.	Django .filter() query in the Marketplace view.
+Karma Staking	Sellers must "lock" reputation points to list high-value items.	Model field karma_score logic.
+Price Engine	Real-time "Fair Price" suggestion based on Grade and Weight.	Dictionary-based logic: BasePrice * GradeMultiplier.
+4. Non-Functional Requirements (The "How")
+Security: All provenance logs must be immutable (read-only after creation).
+
+Performance: The marketplace feed must load in under 1.5 seconds on mobile data.
+
+Transparency: Every transaction must display its unique "Blockchain Hash" publicly.
+
+Inclusion: Minimalist CSS for fast loading in low-connectivity (Tier 3) areas.
+
+Integrity: The system must prevent "double-listing" of the same waste pile.
+
+5. UI & Page Screens
+Screen 1: The Landing Hub
+Hero: "Your Waste is Someone Else's Raw Material."
+
+CTA: [Login/Join] buttons and a live "Impact Counter" (Total CO2 Saved).
+
+Screen 2: The Marketplace (Feed)
+Layout: Vertical cards.
+
+Card Info: Material thumbnail, Weight, Grade (A/B/C), and a "Verified" tick-mark.
+
+Interaction: Clicking a card opens the Provenance Detail Page.
+
+Screen 3: Provenance Detail (The Trust Page)
+Top: Video audit frames (from OpenCV).
+
+Middle: The Chain of Custody (Vertical timeline).
+
+Bottom: "Download Sustainability Certificate" button.
+
+6. Technical Schema (models.py Roadmap)
+Python
+class WasteListing(models.Model):
+    # Marketplace Core
+    material = models.CharField(max_length=100)
+    weight = models.FloatField()
+    base_price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Quality Verification (From OpenCV)
+    grade = models.CharField(choices=[('A','A'), ('B','B'), ('C','C')])
+    trust_score = models.IntegerField() # 0-100
+    is_verified = models.BooleanField(default=False)
+    
+    # Sustainability Metadata
+    co2_saved = models.FloatField() # Auto-calculated weight * factor
+
+class ProvenanceBlock(models.Model):
+    listing = models.ForeignKey(WasteListing, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50) # Scanned, Sold, Shipped
+    timestamp = models.DateTimeField(auto_now_add=True)
+    previous_hash = models.CharField(max_length=64)
+    current_hash = models.CharField(max_length=64) # SHA-256
+7. The 6-Hour Sprint Strategy
+Phase 1 (Setup): Build the User & Waste models. Get the Marketplace page showing "Empty" state.
+
+Phase 2 (The Vault): Code the ProvenanceBlock and the hashing function. This is your "Blockchain" differentiator.
+
+Phase 3 (The Logic): Build the VerificationReceiver view that takes data from your teammate (OpenCV).
+
+Phase 4 (The Polish): Use Bootstrap to make the Dashboards look clean. Add a "Digital Certificate" template.
+
+Would you like me to generate the "Digital Certificate" HTML template that pulls data from the Blockchain logs for the final demo?

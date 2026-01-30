@@ -1,0 +1,88 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract WasteLedger {
+
+    enum ActionType {
+        QUALITY_VERIFIED,
+        LISTED,
+        COLLECTED,
+        DELIVERED
+    }
+
+    struct WasteLog {
+        ActionType action;
+        string grade;        // A / B / C
+        uint256 trustScore;  // 0 - 100
+        uint256 timestamp;
+    }
+
+    // wasteId => array of immutable logs
+    mapping(string => WasteLog[]) private wasteHistory;
+
+    event WasteLogAdded(
+        string wasteId,
+        ActionType action,
+        string grade,
+        uint256 trustScore,
+        uint256 timestamp
+    );
+
+    // 🔐 Called after OpenCV quality check
+    function recordQualityCheck(
+        string memory wasteId,
+        string memory grade,
+        uint256 trustScore
+    ) public {
+        require(trustScore <= 100, "Invalid trust score");
+
+        wasteHistory[wasteId].push(
+            WasteLog(
+                ActionType.QUALITY_VERIFIED,
+                grade,
+                trustScore,
+                block.timestamp
+            )
+        );
+
+        emit WasteLogAdded(
+            wasteId,
+            ActionType.QUALITY_VERIFIED,
+            grade,
+            trustScore,
+            block.timestamp
+        );
+    }
+
+    // 🔁 Called on listing, collection, delivery
+    function recordStatusUpdate(
+        string memory wasteId,
+        ActionType action
+    ) public {
+        require(action != ActionType.QUALITY_VERIFIED, "Use quality check");
+
+        wasteHistory[wasteId].push(
+            WasteLog(
+                action,
+                "",
+                0,
+                block.timestamp
+            )
+        );
+
+        emit WasteLogAdded(
+            wasteId,
+            action,
+            "",
+            0,
+            block.timestamp
+        );
+    }
+
+    // 📜 Read-only provenance history
+    function getWasteHistory(
+        string memory wasteId
+    ) public view returns (WasteLog[] memory) {
+        return wasteHistory[wasteId];
+    }
+}

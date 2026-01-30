@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Offers - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">
+        <i class="bi bi-receipt me-2"></i>My Purchase Offers
+    </h2>
+
+    {% if offers %}
+    <div class="row">
+        {% for offer in offers %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="mb-0">{{ offer.listing.title|truncatewords:8 }}</h5>
+                        <span
+                            class="badge bg-{% if offer.status == 'PENDING' %}warning{% elif offer.status == 'ACCEPTED' %}success{% elif offer.status == 'CONFIRMED' %}primary{% elif offer.status == 'REJECTED' %}danger{% else %}secondary{% endif %}">
+                            {{ offer.get_status_display }}
+                        </span>
+                    </div>
+
+                    <p class="mb-2">
+                        <strong>Seller:</strong> {{ offer.seller.get_full_name }}<br>
+                        <strong>My Offer:</strong> <span class="text-success">₹{{ offer.offer_amount }}</span><br>
+                        <strong>Submitted:</strong> {{ offer.created_at|date:"M d, Y H:i" }}
+                    </p>
+
+                    {% if offer.status == 'ACCEPTED' %}
+                    <div class="alert alert-success small mb-2">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Offer accepted! Click below to pay via Razorpay.
+                    </div>
+                    <button type="button" class="btn btn-success w-100"
+                        onclick="initiatePayment({{ offer.id }}, {{ offer.offer_amount }})">
+                        <i class="bi bi-credit-card me-1"></i>Pay Now with Razorpay
+                    </button>
+                    {% elif offer.status == 'CONFIRMED' %}
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Payment confirmed! Transaction hash: <code>{{ offer.transaction_hash|slice:":16" }}...</code>
+                    </div>
+                    {% elif offer.status == 'REJECTED' %}
+                    {% if offer.seller_notes %}
+                    <div class="alert alert-danger small mb-0">
+                        <strong>Reason:</strong> {{ offer.seller_notes }}
+                    </div>
+                    {% endif %}
+                    {% elif offer.status == 'PENDING' %}
+                    <div class="alert alert-warning small mb-0">
+                        <i class="bi bi-clock me-1"></i>
+                        Waiting for seller to respond...
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'listing_detail' offer.listing.id %}" class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="bi bi-eye me-1"></i>View Listing
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        You haven't made any offers yet. <a href="{% url 'marketplace_feed' %}">Browse marketplace</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function initiatePayment(transactionId, amount) {
+        // Create Razorpay order
+        fetch(`/transactions/pay/${transactionId}/`, {
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+
+                // Open Razorpay checkout
+                var options = {
+                    "key": data.key_id,
+                    "amount": data.amount,
+                    "currency": data.currency,
+                    "name": "CircuTrade AI",
+                    "description": "Payment for waste material purchase",
+                    "order_id": data.order_id,
+                    "handler": function (response) {
+                        // Payment successful - Verify on backend
+                        fetch('/transactions/verify-payment/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                transaction_id: transactionId
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(result => {
+                                if (result.success) {
+                                    alert('✅ ' + result.message);
+                                    location.reload();
+                                } else {
+                                    alert('❌ Payment verification failed: ' + result.error);
+                                }
+                            })
+                            .catch(error => {
+                                alert('Error verifying payment: ' + error);
+                            });
+                    },
+                    "prefill": {
+                        "name": data.buyer_name,
+                        "email": data.buyer_email,
+                        "contact": data.buyer_phone
+                    },
+                    "theme": {
+                        "color": "#10b981"
+                    },
+                    "modal": {
+                        "ondismiss": function () {
+                            alert('Payment cancelled');
+                        }
+                    }
+                };
+
+                var rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(error => {
+                alert('Error creating payment order: ' + error);
+            });
+    }
+</script>
+{% endblock %}

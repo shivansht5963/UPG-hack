@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5">
+    <div class="container position-relative">
+        <h1 class="hero-title">Waste Marketplace</h1>
+        <p class="hero-subtitle">Discover verified industrial waste ready for recycling</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Filters Section -->
+    <div class="card card-custom mb-4">
+        <div class="card-body">
+            <h5 class="mb-3"><i class="bi bi-funnel"></i> Filter Listings</h5>
+            <form method="get" id="filter-form">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Material Type</label>
+                        {{ filter_form.material }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Grade</label>
+                        {{ filter_form.grade }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Min Weight (kg)</label>
+                        {{ filter_form.min_weight }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Max Weight (kg)</label>
+                        {{ filter_form.max_weight }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">City</label>
+                        {{ filter_form.city }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">State</label>
+                        {{ filter_form.state }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Sort By</label>
+                        {{ filter_form.sort_by }}
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="form-check">
+                            {{ filter_form.verified_only }}
+                            <label class="form-check-label">{{ filter_form.verified_only.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary-custom w-100">
+                            <i class="bi bi-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+            <i class="bi bi-box-seam text-primary-custom"></i>
+            {{ total_count }} Listing{{ total_count|pluralize }} Found
+        </h4>
+        {% if user.is_authenticated and user.role == 'GENERATOR' %}
+        <a href="{% url 'create_listing' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> List Your Waste
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Listings Grid -->
+    <div class="row g-4" id="listings-container">
+        {% for listing in listings %}
+        <div class="col-md-4 fade-in-up">
+            <div class="marketplace-card">
+                <!-- Image -->
+                <a href="{% url 'listing_detail' listing.id %}">
+                    {% if listing.image1 %}
+                    <img src="{{ listing.image1.url }}" class="card-img-top" alt="{{ listing.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                        style="height: 200px;">
+                        <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                </a>
+
+                <!-- Badges Overlay -->
+                <div class="position-absolute top-0 end-0 p-2">
+                    {% if listing.is_verified %}
+                    <span class="badge-verified">
+                        <i class="bi bi-shield-check"></i> Verified
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="position-absolute top-0 start-0 p-2">
+                    <span class="badge-grade-{{ listing.grade|lower }}">
+                        Grade {{ listing.grade }}
+                    </span>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'listing_detail' listing.id %}" class="text-decoration-none text-dark">
+                            {{ listing.title|truncatewords:8 }}
+                        </a>
+                    </h5>
+
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-recycle"></i> {{ listing.material.name }}
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            <i class="bi bi-weight"></i> {{ listing.weight }} kg
+                        </span>
+                        <span class="fw-bold text-success">
+                            ₹{{ listing.calculated_price|floatformat:2 }}
+                        </span>
+                    </div>
+
+                    <div class="text-muted small mb-2">
+                        <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                    </div>
+
+                    <!-- Location Map Preview (if coordinates available) -->
+                    {% if listing.latitude and listing.longitude %}
+                    <div class="mb-2">
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center={{ listing.latitude }},{{ listing.longitude }}&zoom=13&size=400x150&markers=color:red%7C{{ listing.latitude }},{{ listing.longitude }}&key={{ GOOGLE_MAPS_API_KEY }}"
+                            alt="Location map" class="img-fluid rounded"
+                            style="width: 100%; height: auto; max-height: 120px; object-fit: cover;">
+                    </div>
+                    {% endif %}
+
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar-custom" role="progressbar" style="width: {{ listing.trust_score }}%;"
+                            aria-valuenow="{{ listing.trust_score }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-3">
+                        Trust Score: {{ listing.trust_score }}%
+                    </p>
+
+                    <div class="d-grid">
+                        <a href="{% url 'listing_detail' listing.id %}" class="btn btn-outline-custom">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #d1d5db;"></i>
+            <h4 class="mt-3 text-muted">No listings found</h4>
+            <p class="text-muted">Try adjusting your filters or check back later.</p>
+            {% if user.is_authenticated and user.role == 'GENERATOR' %}
+            <a href="{% url 'create_listing' %}" class="btn btn-primary-custom mt-3">
+                <i class="bi bi-plus-circle"></i> Create First Listing
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if listings.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if listings.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ listings.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">
+                    Page {{ listings.number }} of {{ listings.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if listings.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ listings.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ listings.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

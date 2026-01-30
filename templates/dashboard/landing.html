@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CircuTrade AI - Transforming Waste into Value{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section position-relative overflow-hidden py-5">
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="hero-title display-3 fw-bold mb-4 fade-in-up">
+                    Your Waste is<br>
+                    <span class="text-success">Someone Else's</span><br>
+                    Raw Material
+                </h1>
+                <p class="hero-subtitle lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                    Join India's first AI-powered circular economy marketplace for verified industrial waste.
+                    Transparent pricing. Blockchain tracking. Environmental impact.
+                </p>
+                <div class="d-flex gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+                    <a href="{% url 'register' %}" class="btn btn-success btn-lg">
+                        <i class="bi bi-person-plus me-2"></i>Join Now
+                    </a>
+                    <a href="{% url 'marketplace_feed' %}" class="btn btn-outline-custom btn-lg">
+                        <i class="bi bi-shop me-2"></i>Browse Marketplace
+                    </a>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="row mt-5 fade-in-up" style="animation-delay: 0.6s;">
+                    <div class="col-6 col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-check text-success me-2" style="font-size: 2rem;"></i>
+                            <div>
+                                <div class="fw-bold">AI Verified</div>
+                                <small class="text-muted">Quality Assured</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-currency-rupee text-success me-2" style="font-size: 2rem;"></i>
+                            <div>
+                                <div class="fw-bold">Fair Pricing</div>
+                                <small class="text-muted">Grade-Based</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-globe2 text-success me-2" style="font-size: 2rem;"></i>
+                            <div>
+                                <div class="fw-bold">CO₂ Tracking</div>
+                                <small class="text-muted">Real Impact</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center fade-in-up" style="animation-delay: 0.8s;">
+                <img src="{% static 'images/hero-illustration.svg' %}" alt="Circular Economy" class="img-fluid"
+                    style="max-width: 500px;" onerror="this.style.display='none'">
+                <!-- Fallback icon if image not found -->
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+                    <i class="bi bi-recycle text-success opacity-25" style="font-size: 15rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Impact Counter Section -->
+<div class="bg-primary-custom text-white py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Impact So Far</h2>
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="impact-counter">
+                    <i class="bi bi-box-seam mb-3" style="font-size: 3rem;"></i>
+                    <div class="impact-number" data-target="{{ stats.total_listings }}">0</div>
+                    <div class="impact-label">Active Listings</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="impact-counter">
+                    <i class="bi bi-check-circle mb-3" style="font-size: 3rem;"></i>
+                    <div class="impact-number" data-target="{{ stats.total_verified_listings }}">0</div>
+                    <div class="impact-label">Verified Listings</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="impact-counter">
+                    <i class="bi bi-weight mb-3" style="font-size: 3rem;"></i>
+                    <div class="impact-number" data-target="{{ stats.total_weight_available|floatformat:0 }}">0</div>
+                    <div class="impact-label">Kg Available</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="impact-counter">
+                    <i class="bi bi-globe2 mb-3" style="font-size: 3rem;"></i>
+                    <div class="impact-number" data-target="{{ stats.total_co2_potential|floatformat:0 }}">0</div>
+                    <div class="impact-label">Kg CO₂ Savable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Listings -->
+{% if featured_listings %}
+<div class="container my-5">
+    <h2 class="text-center mb-5">Featured Verified Listings</h2>
+    <div class="row g-4">
+        {% for listing in featured_listings %}
+        <div class="col-md-4">
+            <div class="marketplace-card">
+                <a href="{% url 'listing_detail' listing.id %}">
+                    {% if listing.image1 %}
+                    <img src="{{ listing.image1.url }}" class="card-img-top" alt="{{ listing.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                        style="height: 200px;">
+                        <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                </a>
+
+                <div class="position-absolute top-0 end-0 p-2">
+                    <span class="badge-verified">
+                        <i class="bi bi-shield-check"></i> Verified
+                    </span>
+                </div>
+                <div class="position-absolute top-0 start-0 p-2">
+                    <span class="badge-grade-{{ listing.grade|lower }}">
+                        Grade {{ listing.grade }}
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'listing_detail' listing.id %}" class="text-decoration-none text-dark">
+                            {{ listing.title|truncatewords:8 }}
+                        </a>
+                    </h5>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-recycle"></i> {{ listing.material.name }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            <i class="bi bi-weight"></i> {{ listing.weight }} kg
+                        </span>
+                        <span class="fw-bold text-success">
+                            ₹{{ listing.calculated_price|floatformat:2 }}
+                        </span>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'marketplace_feed' %}" class="btn btn-primary-custom">
+            View All Listings <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- How It Works -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How CircuTrade AI Works</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary-custom text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="bi bi-upload"></i>
+                    </div>
+                    <h4>1. List Your Waste</h4>
+                    <p class="text-muted">Generators upload waste details with photos. Our AI verifies quality and
+                        suggests fair pricing.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h4>2. Smart Matching</h4>
+                    <p class="text-muted">Buyers discover verified materials nearby. Filter by type, grade, and location
+                        for best matches.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>3. Track Impact</h4>
+                    <p class="text-muted">Every transaction is tracked. See CO₂ saved, karma earned, and environmental
+                        impact in real-time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container my-5 text-center">
+    <h2 class="mb-4">Ready to Transform Waste into Value?</h2>
+    <p class="lead text-muted mb-4">Join thousands of businesses creating a circular economy.</p>
+    <div class="d-flex gap-3 justify-content-center">
+        <a href="{% url 'register' %}" class="btn btn-success btn-lg">
+            <i class="bi bi-person-plus me-2"></i>Sign Up Free
+        </a>
+        <a href="{% url 'marketplace_feed' %}" class="btn btn-outline-custom btn-lg">
+            <i class="bi bi-shop me-2"></i>Explore Marketplace
+        </a>
+    </div>
+</div>
+{% endblock %}

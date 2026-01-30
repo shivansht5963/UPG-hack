@@ -1,0 +1,23 @@
+# Django CircuTrade AI - Dependencies
+
+# Core Framework
+Django>=5.1
+python-decouple==3.8
+
+# Image Handling
+Pillow==10.2.0
+
+# Database (SQLite is built-in, but adding support for future migration)
+# psycopg2-binary==2.9.9  # Uncomment for PostgreSQL
+
+# PDF Generation (for sustainability certificates)
+reportlab>=4.4.3
+
+# Utilities
+python-dateutil==2.8.2
+
+# Payment Gateway
+razorpay==1.4.2
+
+# AI - Gemini for waste quality grading
+google-generativeai>=0.8.0

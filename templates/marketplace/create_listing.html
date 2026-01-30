@@ -1,0 +1,494 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Listing - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card card-custom shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-primary-custom">
+                            <i class="bi bi-plus-circle me-2"></i>List Your Waste
+                        </h2>
+                        <p class="text-muted">Create a new waste listing with AI verification</p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-info-circle"></i> Basic Information
+                            </h5>
+
+                            <div class="mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">
+                                    Title *
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                                    Description *
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Material Details -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-recycle"></i> Material Details
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.material.id_for_label }}" class="form-label fw-bold">
+                                        Material Type *
+                                    </label>
+                                    {{ form.material }}
+                                    {% if form.material.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.material.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.weight.id_for_label }}" class="form-label fw-bold">
+                                        Weight (kg) *
+                                    </label>
+                                    {{ form.weight }}
+                                    {% if form.weight.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.weight.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.weight.help_text }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.grade.id_for_label }}" class="form-label fw-bold">
+                                    Quality Grade *
+                                </label>
+                                {{ form.grade }}
+                                {% if form.grade.errors %}
+                                <div class="invalid-feedback d-block">{{ form.grade.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">{{ form.grade.help_text }}</small>
+                            </div>
+
+                            <!-- Price Calculator Display -->
+                            <div class="alert alert-info">
+                                <strong><i class="bi bi-calculator"></i> Calculated Price:</strong>
+                                <span id="calculated-price" class="fs-4 text-success fw-bold ms-2">₹0.00</span>
+                                <p class="small mb-0 mt-2">
+                                    Price is automatically calculated based on material, grade, and weight.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Media Upload with OpenCV Verification -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-camera"></i> Media & AI Verification
+                            </h5>
+
+                            <div class="alert alert-info">
+                                <i class="bi bi-robot"></i> <strong>🤖 Gemini AI Grading:</strong> Upload up to 5 clear
+                                photos for
+                                automatic quality analysis. AI will detect material type and assign grade based on image
+                                quality.
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.image1.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.image1.label }}
+                                    </label>
+                                    {{ form.image1 }}
+                                    {% if form.image1.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.image1.errors }}</div>
+                                    {% endif %}
+                                    <img id="preview-1" class="mt-2 d-none img-thumbnail" style="max-width: 100%;">
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.image2.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.image2.label }}
+                                    </label>
+                                    {{ form.image2 }}
+                                    {% if form.image2.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.image2.errors }}</div>
+                                    {% endif %}
+                                    <img id="preview-2" class="mt-2 d-none img-thumbnail" style="max-width: 100%;">
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.image3.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.image3.label }}
+                                    </label>
+                                    {{ form.image3 }}
+                                    {% if form.image3.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.image3.errors }}</div>
+                                    {% endif %}
+                                    <img id="preview-3" class="mt-2 d-none img-thumbnail" style="max-width: 100%;">
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.image4.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.image4.label }}
+                                    </label>
+                                    {{ form.image4 }}
+                                    {% if form.image4.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.image4.errors }}</div>
+                                    {% endif %}
+                                    <img id="preview-4" class="mt-2 d-none img-thumbnail" style="max-width: 100%;">
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.image5.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.image5.label }}
+                                    </label>
+                                    {{ form.image5 }}
+                                    {% if form.image5.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.image5.errors }}</div>
+                                    {% endif %}
+                                    <img id="preview-5" class="mt-2 d-none img-thumbnail" style="max-width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.video.id_for_label }}" class="form-label fw-bold">
+                                    {{ form.video.label }}
+                                </label>
+                                {{ form.video }}
+                                {% if form.video.errors %}
+                                <div class="invalid-feedback d-block">{{ form.video.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-geo-alt"></i> Pickup Location
+                            </h5>
+
+                            <!-- Auto-detect Location Button -->
+                            <div class="alert alert-info d-flex justify-content-between align-items-center mb-3"
+                                id="location-alert">
+                                <div>
+                                    <i class="bi bi-info-circle"></i> <strong>Auto-detect your location</strong> for
+                                    faster listing creation
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm" id="detect-location-btn">
+                                    <i class="bi bi-geo-alt-fill"></i> Detect Location
+                                </button>
+                            </div>
+
+                            <!-- Location Status -->
+                            <div class="alert alert-warning d-none" id="location-loading">
+                                <div class="d-flex align-items-center">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span>Detecting your location...</span>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-success d-none" id="location-success">
+                                <i class="bi bi-check-circle"></i> Location detected successfully!
+                            </div>
+
+                            <div class="alert alert-danger d-none" id="location-error">
+                                <i class="bi bi-exclamation-triangle"></i> <span id="location-error-msg"></span>
+                            </div>
+
+                            <!-- Google Map Display -->
+                            <div class="mb-3 d-none" id="map-container">
+                                <div id="location-map" style="height: 300px; border-radius: 8px; overflow: hidden;">
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="bi bi-pin-map"></i> Your detected location is shown above
+                                </small>
+                            </div>
+
+                            <!-- Hidden fields for latitude and longitude -->
+                            {{ form.latitude }}
+                            {{ form.longitude }}
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label fw-bold">
+                                        City *
+                                    </label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.city.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label fw-bold">
+                                        State *
+                                    </label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.state.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.pincode.id_for_label }}" class="form-label fw-bold">
+                                        Pincode *
+                                    </label>
+                                    {{ form.pincode }}
+                                    {% if form.pincode.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.pincode.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.expires_at.id_for_label }}" class="form-label fw-bold">
+                                        {{ form.expires_at.label }}
+                                    </label>
+                                    {{ form.expires_at }}
+                                    {% if form.expires_at.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.expires_at.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.expires_at.help_text }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label fw-bold">
+                                    Full Address (Optional)
+                                </label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                <div class="invalid-feedback d-block">{{ form.address.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary-custom btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Create Listing & Verify with AI
+                            </button>
+                            <a href="{% url 'marketplace_feed' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
+
+<script>
+    let map;
+    let marker;
+    let userLocation = null;
+
+    // Detect Location Button Click
+    document.getElementById('detect-location-btn').addEventListener('click', function () {
+        detectUserLocation();
+    });
+
+    // Auto-detect location on page load (optional - comment out if you don't want auto-detect)
+    // window.addEventListener('load', function() {
+    //     detectUserLocation();
+    // });
+
+    function detectUserLocation() {
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+            showLocationError('Geolocation is not supported by your browser.');
+            return;
+        }
+
+        // Hide all alerts
+        document.getElementById('location-alert').classList.add('d-none');
+        document.getElementById('location-success').classList.add('d-none');
+        document.getElementById('location-error').classList.add('d-none');
+
+        // Show loading
+        document.getElementById('location-loading').classList.remove('d-none');
+
+        // Request user location
+        navigator.geolocation.getCurrentPosition(
+            // Success callback
+            function (position) {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                // Update hidden fields
+                document.getElementById('id_latitude').value = userLocation.lat;
+                document.getElementById('id_longitude').value = userLocation.lng;
+
+                // Hide loading, show success
+                document.getElementById('location-loading').classList.add('d-none');
+                document.getElementById('location-success').classList.remove('d-none');
+
+                // Initialize map
+                initializeMap(userLocation);
+
+                // Reverse geocode to get address
+                reverseGeocode(userLocation);
+            },
+            // Error callback
+            function (error) {
+                document.getElementById('location-loading').classList.add('d-none');
+
+                let errorMsg = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'Location permission denied. Please enable location access in your browser settings.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'Location information unavailable. Please try again.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'Location request timed out. Please try again.';
+                        break;
+                    default:
+                        errorMsg = 'An unknown error occurred while detecting location.';
+                }
+                showLocationError(errorMsg);
+            },
+            // Options
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    }
+
+    function initializeMap(location) {
+        // Show map container
+        document.getElementById('map-container').classList.remove('d-none');
+
+        // Initialize map
+        map = new google.maps.Map(document.getElementById('location-map'), {
+            center: location,
+            zoom: 15,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true
+        });
+
+        // Add marker
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: 'Your Location',
+            animation: google.maps.Animation.DROP
+        });
+
+        // Add info window
+        const infoWindow = new google.maps.InfoWindow({
+            content: '<div style="padding: 8px;"><strong>Pickup Location</strong><br>Drag marker to adjust</div>'
+        });
+        infoWindow.open(map, marker);
+
+        // Make marker draggable
+        marker.setDraggable(true);
+
+        // Update coordinates when marker is dragged
+        google.maps.event.addListener(marker, 'dragend', function (event) {
+            const newLocation = {
+                lat: event.latLng.lat(),
+                lng: event.latLng.lng()
+            };
+            document.getElementById('id_latitude').value = newLocation.lat;
+            document.getElementById('id_longitude').value = newLocation.lng;
+
+            // Reverse geocode new location
+            reverseGeocode(newLocation);
+        });
+    }
+
+    function reverseGeocode(location) {
+        const geocoder = new google.maps.Geocoder();
+        const latlng = { lat: location.lat, lng: location.lng };
+
+        geocoder.geocode({ location: latlng }, function (results, status) {
+            if (status === 'OK' && results[0]) {
+                // Parse address components
+                let city = '';
+                let state = '';
+                let pincode = '';
+                let country = '';
+
+                results[0].address_components.forEach(function (component) {
+                    const types = component.types;
+
+                    if (types.includes('locality')) {
+                        city = component.long_name;
+                    } else if (types.includes('administrative_area_level_3') && !city) {
+                        city = component.long_name;
+                    } else if (types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
+                    } else if (types.includes('postal_code')) {
+                        pincode = component.long_name;
+                    } else if (types.includes('country')) {
+                        country = component.long_name;
+                    }
+                });
+
+                // Auto-fill form fields
+                if (city) document.getElementById('id_city').value = city;
+                if (state) document.getElementById('id_state').value = state;
+                if (pincode) document.getElementById('id_pincode').value = pincode;
+
+                // Optionally fill address field
+                const addressField = document.getElementById('id_address');
+                if (addressField && !addressField.value) {
+                    addressField.value = results[0].formatted_address;
+                }
+
+                console.log('Address detected:', { city, state, pincode, country });
+            } else {
+                console.warn('Reverse geocoding failed:', status);
+                showLocationError('Could not retrieve address from coordinates. Please enter manually.');
+            }
+        });
+    }
+
+    function showLocationError(message) {
+        document.getElementById('location-error-msg').textContent = message;
+        document.getElementById('location-error').classList.remove('d-none');
+        document.getElementById('location-alert').classList.remove('d-none');
+    }
+
+    // Image preview initialization (existing code)
+    // Real-time price calculator (existing code in main.js)
+</script>
+{% endblock %}

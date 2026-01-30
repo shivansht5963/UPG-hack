@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buyer Dashboard - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-2">Welcome, {{ user.get_full_name }}!</h2>
+            <p class="text-muted">{{ user.get_role_display }} Dashboard</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'marketplace_feed' %}" class="btn btn-success">
+                <i class="bi bi-shop me-2"></i>Browse Marketplace
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam text-primary-custom" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.available_listings }}</div>
+                    <div class="small text-muted">Available Listings</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check text-success" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.verified_listings }}</div>
+                    <div class="small text-muted">Verified Listings</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-geo-alt text-info" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.nearby_listings }}</div>
+                    <div class="small text-muted">Nearby Listings</div>
+                    <div class="small text-info">{{ user.city }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card card-custom">
+                <div class="card-body text-center">
+                    <i class="bi bi-recycle text-warning" style="font-size: 2.5rem;"></i>
+                    <div class="widget-value mt-2">{{ stats.total_materials }}</div>
+                    <div class="small text-muted">Material Types</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Listings -->
+    <div class="mb-4">
+        <h5 class="mb-3"><i class="bi bi-star me-2"></i>Recommended for You</h5>
+        {% if recommended_listings %}
+        <div class="row g-3">
+            {% for listing in recommended_listings %}
+            <div class="col-md-4">
+                <div class="marketplace-card">
+                    <a href="{% url 'listing_detail' listing.id %}">
+                        {% if listing.image1 %}
+                        <img src="{{ listing.image1.url }}" class="card-img-top" alt="{{ listing.title }}">
+                        {% else %}
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                            style="height: 200px;">
+                            <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="position-absolute top-0 end-0 p-2">
+                        {% if listing.is_verified %}
+                        <span class="badge-verified">
+                            <i class="bi bi-shield-check"></i> Verified
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="position-absolute top-0 start-0 p-2">
+                        <span class="badge-grade-{{ listing.grade|lower }}">
+                            Grade {{ listing.grade }}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'listing_detail' listing.id %}" class="text-decoration-none text-dark">
+                                {{ listing.title|truncatewords:8 }}
+                            </a>
+                        </h5>
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-recycle"></i> {{ listing.material.name }}
+                        </p>
+
+                        <!-- Trust Score -->
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Trust Score</small>
+                                <small class="fw-bold">{{ listing.trust_score }}%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar-custom" style="width: {{ listing.trust_score }}%;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">
+                                <i class="bi bi-weight"></i> {{ listing.weight }} kg
+                            </span>
+                            <span class="fw-bold text-success">
+                                ₹{{ listing.calculated_price|floatformat:2 }}
+                            </span>
+                        </div>
+
+                        <div class="text-muted small mb-2">
+                            <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                        </div>
+
+                        <div class="text-success small">
+                            <i class="bi bi-globe2"></i> Saves {{ listing.co2_saved|floatformat:1 }} kg CO₂
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card card-custom">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-search" style="font-size: 4rem; color: #d1d5db;"></i>
+                <h5 class="mt-3 text-muted">No listings in your area yet</h5>
+                <p class="text-muted">Try browsing all listings or expanding your search</p>
+                <a href="{% url 'marketplace_feed' %}" class="btn btn-primary-custom mt-3">
+                    <i class="bi bi-shop me-2"></i>Browse All Listings
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Top Materials -->
+    <div class="card card-custom">
+        <div class="card-body">
+            <h5 class="mb-4"><i class="bi bi-graph-up me-2"></i>Most Available Materials</h5>
+            {% if top_materials %}
+            <div class="row">
+                {% for material in top_materials %}
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center p-3 border rounded">
+                        <i class="bi bi-recycle text-success me-3" style="font-size: 2rem;"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ material.name }}</h6>
+                            <small class="text-muted">{{ material.listing_count }} listings available</small>
+                            <div class="small text-success mt-1">
+                                ₹{{ material.base_price }}/kg base price
+                            </div>
+                        </div>
+                        <a href="{% url 'marketplace_feed' %}?material={{ material.id }}"
+                            class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">No materials available yet</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100 bg-light">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-lightbulb me-2"></i>Buyer Tips</h6>
+                    <ul class="mb-0 small">
+                        <li>Filter by location to reduce transport costs</li>
+                        <li>Look for Grade A materials for best quality</li>
+                        <li>Check seller's karma score and verification</li>
+                        <li>Contact sellers for bulk discounts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card card-custom h-100 bg-light">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-shield-check me-2"></i>Verification Benefits</h6>
+                    <p class="small mb-2">Verified listings have:</p>
+                    <ul class="mb-0 small">
+                        <li>AI-verified quality (30-100% trust score)</li>
+                        <li>Accurate material grading</li>
+                        <li>Fair pricing recommendations</li>
+                        <li>Reliable seller information</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

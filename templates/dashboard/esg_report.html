@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ESG Impact Report - CircuTrade AI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">
+            <i class="bi bi-globe2 text-success me-2"></i>
+            Environmental, Social & Governance Report
+        </h2>
+        <p class="text-muted">Your contribution to a circular economy</p>
+    </div>
+
+    <!-- Personal Impact (if applicable) -->
+    {% if user.role == 'GENERATOR' and user_impact.total_co2 %}
+    <div class="card card-custom mb-4 bg-gradient"
+        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+        <div class="card-body text-white p-4">
+            <h4 class="mb-4"><i class="bi bi-person-circle me-2"></i>Your Personal Impact</h4>
+            <div class="row text-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="impact-stat">
+                        <div style="font-size: 3rem;">{{ user_impact.total_weight|floatformat:0 }}</div>
+                        <div class="opacity-75">Kg Waste Listed</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="impact-stat">
+                        <div style="font-size: 3rem;">{{ user_impact.total_co2|floatformat:1 }}</div>
+                        <div class="opacity-75">Kg CO₂ Potentially Saved</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Platform-Wide Impact -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h4 class="mb-3"><i class="bi bi-building me-2"></i>Platform-Wide Impact</h4>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam text-primary-custom" style="font-size: 3rem;"></i>
+                    <div class="widget-value mt-3">{{ platform_impact.total_listings }}</div>
+                    <div class="text-muted">Total Listings</div>
+                    <small class="text-success">{{ platform_impact.total_verified_listings }} verified</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-weight text-success" style="font-size: 3rem;"></i>
+                    <div class="widget-value mt-3">{{ platform_impact.total_weight_available|floatformat:0 }}</div>
+                    <div class="text-muted">Kg Materials Available</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-globe2 text-warning" style="font-size: 3rem;"></i>
+                    <div class="widget-value mt-3">{{ platform_impact.total_co2_potential|floatformat:1 }}</div>
+                    <div class="text-muted">Kg CO₂ Savable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environmental Impact Breakdown -->
+    <div class="card card-custom mb-4">
+        <div class="card-body">
+            <h5 class="mb-4"><i class="bi bi-tree me-2"></i>Environmental Impact Breakdown</h5>
+
+            <div class="row">
+                <div class="col-md-4 mb-3 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-tree-fill text-success" style="font-size: 3rem;"></i>
+                        <h4 class="mt-2">{{ platform_impact.total_co2_potential|floatformat:0|add:"0"|floordiv:21 }}
+                        </h4>
+                        <p class="text-muted mb-0">Trees Equivalent</p>
+                        <small class="text-success">CO₂ absorption per year</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-car-front text-primary" style="font-size: 3rem;"></i>
+                        <h4 class="mt-2">{{ platform_impact.total_co2_potential|floatformat:0|add:"0"|floordiv:0.12 }}
+                        </h4>
+                        <p class="text-muted mb-0">Car Km Saved</p>
+                        <small class="text-primary">Emission equivalence</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 text-center">
+                    <div class="p-3">
+                        <i class="bi bi-award text-warning" style="font-size: 3rem;"></i>
+                        <h4 class="mt-2">{{ platform_impact.average_trust_score|floatformat:0 }}%</h4>
+                        <p class="text-muted mb-0">Avg Trust Score</p>
+                        <small class="text-warning">Quality assurance</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UN SDG Alignment -->
+    <div class="card card-custom mb-4">
+        <div class="card-body">
+            <h5 class="mb-4"><i class="bi bi-globe me-2"></i>UN Sustainable Development Goals Alignment</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center p-3 border rounded">
+                        <div class="me-3 text-center" style="min-width: 60px;">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width: 50px; height: 50px;">
+                                <strong>12</strong>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Responsible Consumption</h6>
+                            <small class="text-muted">Circular economy practices</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center p-3 border rounded">
+                        <div class="me-3 text-center" style="min-width: 60px;">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width: 50px; height: 50px;">
+                                <strong>13</strong>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Climate Action</h6>
+                            <small class="text-muted">Reducing CO₂ emissions</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center p-3 border rounded">
+                        <div class="me-3 text-center" style="min-width: 60px;">
+                            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width: 50px; height: 50px;">
+                                <strong>8</strong>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Decent Work</h6>
+                            <small class="text-muted">Economic opportunities</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Governance & Transparency -->
+    <div class="card card-custom">
+        <div class="card-body">
+            <h5 class="mb-3"><i class="bi bi-shield-check me-2"></i>Governance & Transparency</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6><i class="bi bi-camera me-2"></i>AI Verification</h6>
+                    <p class="small text-muted">
+                        Every listing is processed through our OpenCV-based verification system,
+                        assigning trust scores from 30-100% based on image quality and material authenticity.
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6><i class="bi bi-currency-rupee me-2"></i>Fair Pricing</h6>
+                    <p class="small text-muted">
+                        Grade-based pricing ensures fairness. Grade A (1.5x), Grade B (1.0x),
+                        and Grade C (0.7x) multipliers applied to base material prices.
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6><i class="bi bi-star me-2"></i>Karma System</h6>
+                    <p class="small text-muted">
+                        Generators earn karma (0-1000) based on listing quality, successful transactions,
+                        and platform engagement. Higher karma improves visibility.
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6><i class="bi bi-globe2 me-2"></i>Impact Tracking</h6>
+                    <p class="small text-muted">
+                        Real-time CO₂ savings calculated for every transaction based on material-specific
+                        emission factors (e.g., PET saves 2.5 kg CO₂ per kg recycled).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Button -->
+    <div class="text-center mt-4">
+        <p class="text-muted mb-3">Want a detailed report?</p>
+        <button class="btn btn-success" onclick="window.print()">
+            <i class="bi bi-download me-2"></i>Download Report (PDF)
+        </button>
+    </div>
+</div>
+{% endblock %}
